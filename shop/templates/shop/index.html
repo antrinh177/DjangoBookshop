@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Django Bookshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 1px solid #bbdefb;
+        }
+        
+        header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        header p {
+            font-size: 0.95em;
+            opacity: 0.75;
+            font-weight: 400;
+        }
+        
+        .content {
+            padding: 35px;
+        }
+        
+        /* Messages */
+        .messages {
+            margin-bottom: 24px;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-weight: 400;
+            font-size: 0.9em;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        /* Form Section */
+        .form-section {
+            background: #f8fbff;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            border: 1px solid #e3f2fd;
+        }
+        
+        .form-section h2 {
+            color: #1565c0;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #37474f;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            background: #ffffff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 3px rgba(227, 242, 253, 0.5);
+            background: #ffffff;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 14px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #64b5f6;
+            color: #ffffff;
+        }
+        
+        .btn-primary:hover {
+            background: #42a5f5;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .btn-secondary:hover {
+            background: #bbdefb;
+        }
+        
+        .btn-success {
+            background: #d4e9d7;
+            color: #2e7d32;
+        }
+        
+        .btn-success:hover {
+            background: #c4d9c7;
+        }
+        
+        /* Table Section */
+        .table-section {
+            margin-top: 32px;
+        }
+        
+        .table-section h2 {
+            color: #1565c0;
+            margin-bottom: 16px;
+            font-size: 1.2em;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e3f2fd;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        thead {
+            background: #f1f8fd;
+            color: #1565c0;
+        }
+        
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #f1f8fd;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8fbff;
+        }
+        
+        tbody tr.selected {
+            background-color: #fff8e1 !important;
+            border-left: 3px solid #ffa726;
+        }
+        
+        td {
+            padding: 14px 16px;
+            color: #455a64;
+            font-size: 0.95em;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .btn-edit {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+        
+        .btn-edit:hover {
+            background: #b3e5fc;
+        }
+        
+        .btn-delete {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .btn-delete:hover {
+            background: #ffcdd2;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #90a4ae;
+        }
+        
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+        
+        .errorlist {
+            list-style: none;
+            color: #c62828;
+            margin-top: 4px;
+            font-size: 0.875em;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #90a4ae;
+            font-size: 0.85em;
+            background: #f8fbff;
+            border-top: 1px solid #e3f2fd;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Django Bookshop</h1>
+            <p>An Trinh - N01694520</p>
+        </header>
+        
+        <div class="content">
+            <!-- Display Messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Book Form -->
+            <div class="form-section">
+                <h2>{% if selected_book %} Update Book{% else %}Add New Book{% endif %}</h2>
+                <form method="post" action="{% url 'index' %}">
+                    {% csrf_token %}
+                    
+                    {% if selected_book %}
+                    <input type="hidden" name="book_id" value="{{ selected_book.id }}">
+                    <input type="hidden" name="action" value="update">
+                    {% else %}
+                    <input type="hidden" name="action" value="add">
+                    {% endif %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                            {{ form.name }}
+                            {{ form.name.errors }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.edition.id_for_label }}">{{ form.edition.label }}</label>
+                            {{ form.edition }}
+                            {{ form.edition.errors }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+                            {{ form.price }}
+                            {{ form.price.errors }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        {% if selected_book %}
+                        <button type="submit" class="btn btn-success"> Update Book</button>
+                        <a href="{% url 'index' %}" class="btn btn-secondary"> Cancel</a>
+                        {% else %}
+                        <button type="submit" class="btn btn-primary"> Add Book</button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Books Table -->
+            <div class="table-section">
+                <h2> Book Inventory ({{ books.count }} book{{ books.count|pluralize }})</h2>
+                
+                {% if books %}
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Edition</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in books %}
+                            <tr {% if selected_book and book.id == selected_book.id %}class="selected"{% endif %}>
+                                <td>{{ book.id }}</td>
+                                <td>{{ book.name }}</td>
+                                <td>{{ book.edition }}</td>
+                                <td>${{ book.price }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="?edit={{ book.id }}" class="btn-sm btn-edit"> Edit</a>
+                                        <form method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="book_id" value="{{ book.id }}">
+                                            <button type="submit" class="btn-sm btn-delete"> Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <h3>No books in the inventory</h3>
+                    <p>Add your first book using the form above!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <footer>
+            <p>Django Bookshop Application | MVT Architecture | Humber college | CPAN 214</p>
+        </footer>
+    </div>
+</body>
+</html>
