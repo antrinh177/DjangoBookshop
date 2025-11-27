@@ -30,6 +30,7 @@ def index(request):
     
     This view handles:
     - GET: Display all books and the form
+    - GET with search parameters: Filter books by search criteria
     - POST with 'add': Create a new book
     - POST with 'update': Update an existing book
     - POST with 'delete': Delete a book
@@ -109,11 +110,19 @@ def index(request):
     # Retrieve all books from database using ORM (no raw SQL)
     books = Book.objects.all().order_by('id')
     
+    # Handle search functionality
+    search_query = request.GET.get('search', '').strip()
+    
+    # Apply search filter if provided
+    if search_query:
+        books = books.filter(name__icontains=search_query)
+    
     # Prepare context data for template
     context = {
         'books': books,
         'form': form,
         'selected_book': selected_book,
+        'search_query': search_query,
     }
     
     return render(request, 'shop/index.html', context)

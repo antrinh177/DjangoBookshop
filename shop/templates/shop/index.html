@@ -372,9 +372,32 @@
                 </form>
             </div>
             
+            <!-- Search Section -->
+            <div class="form-section">
+                <h2> Search Books</h2>
+                <form method="get" action="{% url 'index' %}" id="searchForm">
+                    <div class="form-row" style="grid-template-columns: 3fr 1fr;">
+                        <div class="form-group">
+                            <label for="search">Book Name</label>
+                            <input type="text" id="search" name="search" class="form-control" 
+                                   placeholder="Search by book name" value="{{ search_query }}">
+                        </div>
+                        
+                        <div class="form-actions" style="align-items: flex-end; margin-top: 0;">
+                            <button type="submit" class="btn btn-primary"> Search</button>
+                            <a href="{% url 'index' %}" class="btn btn-secondary"> Clear</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
             <!-- Books Table -->
             <div class="table-section">
-                <h2> Book Inventory ({{ books.count }} book{{ books.count|pluralize }})</h2>
+                <h2> Book Inventory ({{ books.count }} book{{ books.count|pluralize }})
+                    {% if search_query %}
+                    <span style="font-size: 0.85em; color: #64b5f6; font-weight: normal;">- Filtered</span>
+                    {% endif %}
+                </h2>
                 
                 {% if books %}
                 <div class="table-wrapper">
@@ -416,8 +439,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
+                    {% if search_query %}
+                    <h3>No books found matching "{{ search_query }}"</h3>
+                    <p>Try a different search term or <a href="{% url 'index' %}" style="color: #42a5f5;">clear the search</a></p>
+                    {% else %}
                     <h3>No books in the inventory</h3>
                     <p>Add your first book using the form above!</p>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
